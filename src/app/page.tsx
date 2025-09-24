@@ -6,7 +6,7 @@ import LogBox from "@/components/LogBox";
 
 type LogEntry = {
   timestamp: string;
-  detection: any;
+  detection: { name: string }[]; // we only care about name
 };
 
 export default function HomePage() {
