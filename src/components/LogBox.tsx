@@ -1,33 +1,32 @@
 "use client";
-import { useEffect, useRef } from 'react';
 
-type LogBoxProps = {
-  detections: any[];
+type LogEntry = {
+  timestamp: string;
+  detection: { name: string }[]; // we only care about name
 };
 
-export default function LogBox({ detections }: LogBoxProps) {
-  const logContainerRef = useRef<HTMLDivElement>(null);
+type LogBoxProps = {
+  logs: LogEntry[];
+};
 
-  useEffect(() => {
-    if (logContainerRef.current) {
-      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
-    }
-  }, [detections]);
+export default function LogBox({ logs }: LogBoxProps) {
+  // Take only the latest 50 logs
+  const displayLogs = logs.slice(0, 20);
 
   return (
-    <div className="bg-gray-800 p-4 rounded-xl shadow-lg h-full flex flex-col">
-      <h2 className="text-lg font-bold mb-4 border-b border-gray-700 pb-2">Detection Log</h2>
-      <div ref={logContainerRef} className="flex-grow overflow-y-auto pr-2">
-        {detections.length === 0 ? (
-          <p className="text-gray-400">No detections yet. Start the webcam to begin.</p>
-        ) : (
-          detections.map((detection, index) => (
-            <div key={index} className="mb-2 p-2 bg-gray-700 rounded-md text-sm">
-              <p><span className="font-semibold">Object:</span> {detection.label}</p>
-              <p><span className="font-semibold">Confidence:</span> {(detection.score * 100).toFixed(2)}%</p>
-            </div>
-          ))
-        )}
+    <div className="w-96 h-[420px] bg-gray-800 rounded-lg shadow-lg p-4 overflow-y-auto">
+      <h2 className="text-lg font-bold mb-4 text-green-400">Detection Logs</h2>
+      <div className="space-y-2">
+        {displayLogs.map((log, index) => (
+          <div key={index} className="bg-gray-700 p-2 rounded">
+            <span className="font-mono text-sm text-green-400">
+              [{log.timestamp}]
+            </span>
+            <span className="ml-2 text-sm text-green-200">
+              - Detected: {log.detection.map((d) => d.name).join(", ")}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );

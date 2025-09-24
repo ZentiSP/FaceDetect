@@ -3,14 +3,16 @@ import { useRef, useEffect } from "react";
 
 type WebcamProps = {
   onFrame: (video: HTMLVideoElement) => void;
+  isActive: boolean;
 };
 
-export default function Webcam({ onFrame }: WebcamProps) {
+export default function Webcam({ onFrame, isActive }: WebcamProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const timeoutRef = useRef<number | null>(null);
   const lastSentRef = useRef<number>(0);
 
-  const delayMs = 10; // 1.5 seconds
+  const delayMs = 1000; // 1.5 seconds
 
   const captureFrame = () => {
     const now = Date.now();
@@ -18,22 +20,39 @@ export default function Webcam({ onFrame }: WebcamProps) {
       onFrame(videoRef.current);
       lastSentRef.current = now;
     }
-    timeoutRef.current = window.setTimeout(captureFrame, 1); // check frequently, send every 1.5s
+    timeoutRef.current = window.setTimeout(captureFrame, 10); // check frequently, send every 1.5s
   };
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.onloadedmetadata = () => videoRef.current!.play();
-        captureFrame(); // start capturing frames
+    if (isActive) {
+      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.onloadedmetadata = () => {
+            videoRef.current!.play();
+            captureFrame();
+          };
+        }
+      });
+    } else {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
       }
-    });
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    }
 
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
-  }, [onFrame]);
+  }, [isActive, onFrame]);
 
   return (
     <video
@@ -42,8 +61,8 @@ export default function Webcam({ onFrame }: WebcamProps) {
       playsInline
       width={640}
       height={480}
-      style={{ transform: "scaleX(-1)" }} // mirror video
-      className="rounded-xl shadow-lg"
+      style={{ transform: "scaleX(-1)" }}
+      className="rounded-xl shadow-lg bg-black"
     />
   );
 }
