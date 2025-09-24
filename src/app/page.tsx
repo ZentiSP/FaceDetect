@@ -10,7 +10,7 @@ type LogEntry = {
 };
 
 export default function HomePage() {
-  const [detections, setDetections] = useState<any[]>([]);
+  const [detections, setDetections] = useState<[]>([]);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isWebcamOn, setIsWebcamOn] = useState(false);
   const lastSentRef = useRef<number>(0);
