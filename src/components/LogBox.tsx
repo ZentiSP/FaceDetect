@@ -10,11 +10,18 @@ type LogBoxProps = {
 };
 
 export default function LogBox({ logs }: LogBoxProps) {
-  // Take only the latest 50 logs
+  // Take only the latest 20 logs
   const displayLogs = logs.slice(0, 20);
 
   return (
-    <div className="w-96 h-[420px] bg-gray-800 rounded-lg shadow-lg p-4 overflow-y-auto">
+    <div
+      className="
+        w-full sm:w-96
+        h-64 sm:h-[420px]
+        bg-gray-800 rounded-lg shadow-lg p-4
+        overflow-y-auto
+      "
+    >
       <h2 className="text-lg font-bold mb-4 text-green-400">Detection Logs</h2>
       <div className="space-y-2">
         {displayLogs.map((log, index) => (
