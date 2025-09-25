@@ -28,7 +28,7 @@ export default function DetectionOverlay({ detections, width, height }: Props) {
     detections.forEach((det) => {
       const [x1, y1, x2, y2] = det.bbox;
 
-      // Mirror X coordinates only
+      // Mirror X coordinates
       const mirroredX1 = width - x2;
       const mirroredX2 = width - x1;
 
@@ -37,9 +37,9 @@ export default function DetectionOverlay({ detections, width, height }: Props) {
       ctx.lineWidth = 2;
       ctx.strokeRect(mirroredX1, y1, mirroredX2 - mirroredX1, y2 - y1);
 
-      // Draw text
-      ctx.fillStyle = "Lime";
-      ctx.font = "20px Arial bold";
+      // Draw label
+      ctx.fillStyle = "lime";
+      ctx.font = "16px Arial bold";
       ctx.fillText(
         det.name
           ? `${det.name} (${det.confidence.toFixed(2)})`
@@ -55,7 +55,7 @@ export default function DetectionOverlay({ detections, width, height }: Props) {
       ref={canvasRef}
       width={width}
       height={height}
-      className="absolute top-0 left-0"
+      className="absolute top-0 left-0 w-full h-full"
     />
   );
 }
