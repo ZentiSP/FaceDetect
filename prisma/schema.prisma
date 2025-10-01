@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  logs      Log[]
+}
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  timestamp String
+  detection Json
+  createdAt DateTime @default(now())
+
+  sessionId Int
+  session   Session  @relation(fields: [sessionId], references: [id])
+}

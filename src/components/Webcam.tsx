@@ -12,7 +12,7 @@ export default function Webcam({ onFrame, isActive }: WebcamProps) {
   const timeoutRef = useRef<number | null>(null);
   const lastSentRef = useRef<number>(0);
 
-  const delayMs = 1000; // 1.5 seconds
+  const delayMs = 1200; // 1.5 seconds
 
   const captureFrame = () => {
     const now = Date.now();
